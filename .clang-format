@@ -1,0 +1,6 @@
+BasedOnStyle: LLVM
+
+BreakBeforeBraces: Linux
+ColumnLimit: 0
+IndentWidth: 8
+UseTab: ForIndentation

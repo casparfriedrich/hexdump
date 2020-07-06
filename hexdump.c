@@ -43,36 +43,39 @@ void hexdump(const void *buffer, uint32_t length, uint32_t offset, const char *t
 	}
 
 	putchar(' ');
+	putchar(' ');
 
 	for (uint32_t i = 8; i > 0; i--) {
 		putchar(digits[(start_of_section >> (i - 1) * 4u) % 16]);
 	}
 
+	putchar(' ');
 	putchar('|');
+	putchar(' ');
 
 	for (uint32_t i = start_of_section; i < end_of_section; i++) {
-		if (i % 4 == 0) {
+		if (i % BYTES_PER_LINE) {
 			putchar(' ');
 		}
 
-		if (i < offset || i >= length) {
-			putchar(' ');
-			putchar(' ');
-		} else {
+		if (i >= offset && i < length) {
 			putchar(digits[bytes[i] >> 4u]);
 			putchar(digits[bytes[i] & 15u]);
+		} else {
+			putchar(' ');
+			putchar(' ');
 		}
-
-		putchar(' ');
 	}
 
+	putchar(' ');
 	putchar('|');
+	putchar(' ');
 
 	for (uint32_t i = start_of_section; i < end_of_section; i++) {
-		if (i < offset || i >= length) {
-			putchar(' ');
-		} else {
+		if (i >= offset && i < length) {
 			putchar((bytes[i] > 0x1f) && (bytes[i] < 0x7f) ? bytes[i] : '.');
+		} else {
+			putchar(' ');
 		}
 	}
 

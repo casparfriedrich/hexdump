@@ -25,36 +25,32 @@
 
 #define BYTES_PER_LINE 16u
 
-void hexdump(const void *buffer, uint32_t length, uint32_t offset, const char *title)
+void hexdump(const void *buffer, size_t length, size_t offset)
 {
 	static const char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7',
 	                              '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 	const uint8_t *bytes = (const uint8_t *)buffer;
-	const uint32_t start_of_section = offset - offset % BYTES_PER_LINE;
-	const uint32_t end_of_section = start_of_section + BYTES_PER_LINE;
+	const size_t start_of_section = offset - offset % BYTES_PER_LINE;
+	const size_t end_of_section = start_of_section + BYTES_PER_LINE;
 
 	if (offset >= length) {
 		return;
 	}
 
-	if (title) {
-		puts(title);
-	}
-
 	putchar(' ');
 	putchar(' ');
 
-	for (uint32_t i = 8; i > 0; i--) {
+	for (size_t i = 7; i > 0; i--) {
 		putchar(digits[(start_of_section >> (i - 1) * 4u) % 16]);
 	}
 
 	putchar(' ');
-	putchar('|');
 	putchar(' ');
 
-	for (uint32_t i = start_of_section; i < end_of_section; i++) {
-		if (i % BYTES_PER_LINE) {
+	for (size_t i = start_of_section; i < end_of_section; i++) {
+
+		if (i - start_of_section == BYTES_PER_LINE >> 1u) {
 			putchar(' ');
 		}
 
@@ -65,13 +61,14 @@ void hexdump(const void *buffer, uint32_t length, uint32_t offset, const char *t
 			putchar(' ');
 			putchar(' ');
 		}
+
+		putchar(' ');
 	}
 
 	putchar(' ');
 	putchar('|');
-	putchar(' ');
 
-	for (uint32_t i = start_of_section; i < end_of_section; i++) {
+	for (size_t i = start_of_section; i < end_of_section; i++) {
 		if (i >= offset && i < length) {
 			putchar((bytes[i] > 0x1f) && (bytes[i] < 0x7f) ? bytes[i] : '.');
 		} else {
@@ -79,7 +76,8 @@ void hexdump(const void *buffer, uint32_t length, uint32_t offset, const char *t
 		}
 	}
 
+	putchar('|');
 	putchar('\n');
 
-	hexdump(buffer, length, end_of_section, NULL);
+	hexdump(buffer, length, end_of_section);
 }

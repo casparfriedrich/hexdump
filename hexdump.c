@@ -20,64 +20,58 @@
  * IN THE SOFTWARE.
  */
 
-#include <stdint.h>
-#include <stdio.h>
-
-#define BYTES_PER_LINE 16u
-
-void hexdump(const void *buffer, size_t length, size_t offset)
+void hexdump(const void *buffer, int length, int offset, int (*_putchar)(int))
 {
+	static const int num_address_digits = 8;
+	static const int num_bytes_per_line = 16;
 	static const char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7',
 	                              '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-	const uint8_t *bytes = (const uint8_t *)buffer;
-	const size_t start_of_section = offset - offset % BYTES_PER_LINE;
-	const size_t end_of_section = start_of_section + BYTES_PER_LINE;
+	const unsigned char *bytes = (const unsigned char *)buffer;
+	const int start_of_section = offset - offset % num_bytes_per_line;
+	const int end_of_section = start_of_section + num_bytes_per_line;
 
 	if (offset >= length) {
 		return;
 	}
 
-	putchar(' ');
-	putchar(' ');
-
-	for (size_t i = 7; i > 0; i--) {
-		putchar(digits[(start_of_section >> (i - 1) * 4u) % 16]);
+	for (int i = num_address_digits; i > 0; i--) {
+		_putchar(digits[(start_of_section >> ((i - 1) << 2)) & 15]);
 	}
 
-	putchar(' ');
-	putchar(' ');
+	_putchar(' ');
+	_putchar(' ');
 
-	for (size_t i = start_of_section; i < end_of_section; i++) {
+	for (int i = start_of_section; i < end_of_section; i++) {
 
-		if (i - start_of_section == BYTES_PER_LINE >> 1u) {
-			putchar(' ');
+		if (i - start_of_section == num_bytes_per_line >> 1) {
+			_putchar(' ');
 		}
 
 		if (i >= offset && i < length) {
-			putchar(digits[bytes[i] >> 4u]);
-			putchar(digits[bytes[i] & 15u]);
+			_putchar(digits[bytes[i] >> 4]);
+			_putchar(digits[bytes[i] & 15]);
 		} else {
-			putchar(' ');
-			putchar(' ');
+			_putchar(' ');
+			_putchar(' ');
 		}
 
-		putchar(' ');
+		_putchar(' ');
 	}
 
-	putchar(' ');
-	putchar('|');
+	_putchar(' ');
+	_putchar('|');
 
-	for (size_t i = start_of_section; i < end_of_section; i++) {
+	for (int i = start_of_section; i < end_of_section; i++) {
 		if (i >= offset && i < length) {
-			putchar((bytes[i] > 0x1f) && (bytes[i] < 0x7f) ? bytes[i] : '.');
+			_putchar((bytes[i] > 0x1f) && (bytes[i] < 0x7f) ? bytes[i] : '.');
 		} else {
-			putchar(' ');
+			_putchar(' ');
 		}
 	}
 
-	putchar('|');
-	putchar('\n');
+	_putchar('|');
+	_putchar('\n');
 
-	hexdump(buffer, length, end_of_section);
+	hexdump(buffer, length, end_of_section, _putchar);
 }

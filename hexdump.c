@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-void hexdump(const void *buffer, int length, int offset, int (*_putchar)(int))
+void hexdump(const void *buffer, int offset, int length, int (*_putchar)(int))
 {
 	static const int num_address_digits = 8;
 	static const int num_bytes_per_line = 16;
@@ -73,5 +73,5 @@ void hexdump(const void *buffer, int length, int offset, int (*_putchar)(int))
 	_putchar('|');
 	_putchar('\n');
 
-	hexdump(buffer, length, end_of_section, _putchar);
+	hexdump(buffer, end_of_section, length, _putchar);
 }

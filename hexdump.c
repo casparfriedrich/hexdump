@@ -27,9 +27,13 @@ void hexdump(const void *buffer, int offset, int length, int (*_putchar)(int))
 	static const char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7',
 	                              '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
-	const unsigned char *bytes = (const unsigned char *)buffer;
-	const int start_of_section = offset - offset % num_bytes_per_line;
-	const int end_of_section = start_of_section + num_bytes_per_line;
+	static const unsigned char *bytes = 0;
+	static int start_of_section = 0;
+	static int end_of_section = 0;
+
+	bytes = buffer;
+	start_of_section = offset - offset % num_bytes_per_line;
+	end_of_section = start_of_section + num_bytes_per_line;
 
 	if (offset >= length) {
 		return;

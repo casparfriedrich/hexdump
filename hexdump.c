@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-void hexdump(const void *buffer, int offset, int length, int (*_putchar)(int))
+void hexdump(const void *buffer, int buffer_length, int offset, int (*putchar)(int))
 {
 	static const int num_address_digits = 8;
 	static const int num_bytes_per_line = 16;
@@ -35,47 +35,47 @@ void hexdump(const void *buffer, int offset, int length, int (*_putchar)(int))
 	start_of_section = offset - offset % num_bytes_per_line;
 	end_of_section = start_of_section + num_bytes_per_line;
 
-	if (offset >= length) {
+	if (offset >= buffer_length) {
 		return;
 	}
 
 	for (int i = num_address_digits; i > 0; i--) {
-		_putchar(digits[(start_of_section >> ((i - 1) << 2)) & 15]);
+		putchar(digits[(start_of_section >> ((i - 1) << 2)) & 15]);
 	}
 
-	_putchar(' ');
-	_putchar(' ');
+	putchar(' ');
+	putchar(' ');
 
 	for (int i = start_of_section; i < end_of_section; i++) {
 
 		if (i - start_of_section == num_bytes_per_line >> 1) {
-			_putchar(' ');
+			putchar(' ');
 		}
 
-		if (i >= offset && i < length) {
-			_putchar(digits[bytes[i] >> 4]);
-			_putchar(digits[bytes[i] & 15]);
+		if (i >= offset && i < buffer_length) {
+			putchar(digits[bytes[i] >> 4]);
+			putchar(digits[bytes[i] & 15]);
 		} else {
-			_putchar(' ');
-			_putchar(' ');
+			putchar(' ');
+			putchar(' ');
 		}
 
-		_putchar(' ');
+		putchar(' ');
 	}
 
-	_putchar(' ');
-	_putchar('|');
+	putchar(' ');
+	putchar('|');
 
 	for (int i = start_of_section; i < end_of_section; i++) {
-		if (i >= offset && i < length) {
-			_putchar((bytes[i] > 0x1f) && (bytes[i] < 0x7f) ? bytes[i] : '.');
+		if (i >= offset && i < buffer_length) {
+			putchar((bytes[i] > 0x1f) && (bytes[i] < 0x7f) ? bytes[i] : '.');
 		} else {
-			_putchar(' ');
+			putchar(' ');
 		}
 	}
 
-	_putchar('|');
-	_putchar('\n');
+	putchar('|');
+	putchar('\n');
 
-	hexdump(buffer, end_of_section, length, _putchar);
+	hexdump(buffer, buffer_length, end_of_section, putchar);
 }

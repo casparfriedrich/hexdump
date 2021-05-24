@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Caspar Friedrich <c.s.w.friedrich@gmail.com>
+ * Copyright 2021 Caspar Friedrich <c.s.w.friedrich@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,24 +20,19 @@
  * IN THE SOFTWARE.
  */
 
-void hexdump(const void *buffer, int buffer_length, int offset, int (*putchar)(int))
+int hexdump_internal(const void *buffer, int buffer_length, int offset, int (*putchar)(int))
 {
 	static const int num_address_digits = 8;
 	static const int num_bytes_per_line = 16;
-	static const char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7',
-	                              '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
-	static const unsigned char *bytes = 0;
-	static int start_of_section = 0;
-	static int end_of_section = 0;
-
-	bytes = buffer;
-	start_of_section = offset - offset % num_bytes_per_line;
-	end_of_section = start_of_section + num_bytes_per_line;
+	static const char digits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 	if (offset >= buffer_length) {
-		return;
+		return buffer_length;
 	}
+
+	const unsigned char *bytes = buffer;
+	int start_of_section = offset - offset % num_bytes_per_line;
+	int end_of_section = start_of_section + num_bytes_per_line;
 
 	for (int i = num_address_digits; i > 0; i--) {
 		putchar(digits[(start_of_section >> ((i - 1) << 2)) & 15]);
@@ -77,5 +72,12 @@ void hexdump(const void *buffer, int buffer_length, int offset, int (*putchar)(i
 	putchar('|');
 	putchar('\n');
 
-	hexdump(buffer, buffer_length, end_of_section, putchar);
+	return end_of_section;
+}
+
+void hexdump(const void *buffer, int buffer_length, int offset, int (*putchar)(int))
+{
+	while (offset < buffer_length) {
+		offset = hexdump_internal(buffer, buffer_length, offset, putchar);
+	}
 }
